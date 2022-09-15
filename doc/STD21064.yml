@@ -1,0 +1,310 @@
+openapi: 3.0.1
+info:
+  title: STD21063 API
+  description: 'Global description of my API'
+  version: 1.0.0
+servers:
+ - url: https://STD21063.com
+paths:
+  '/students':
+    get:
+      tags:
+        - Users
+      summary: Get all students
+      operationId: getAllStudents
+      responses:
+        '200':
+          description: List of students, ordered by ref.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        '400':
+          description: Bad request
+    put:
+      tags:
+        - Users
+      summary: Create new students or update existing students
+      description: Update students when `id` are provided, create them otherwise.
+      operationId: createOrUpdateStudents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Student'
+      responses:
+        '200':
+          description: The created or updated students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Student'
+        '400':
+          description: Bad request
+  '/students/{id}':
+    get:
+      tags:
+        - Users
+      summary: Get student by identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      operationId: getStudentById
+      responses:
+        '200':
+          description: The identified student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          description: Bad request
+  '/teachers':
+    get:
+      tags:
+        - Users
+      summary: Get all teachers
+      operationId: getTeachers
+      responses:
+        '200':
+          description: List of teachers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Teacher'
+        '400':
+          description: Bad request
+    put:
+      tags:
+        - Users
+      summary: Create new teachers or update existing teachers
+      description: Update teachers when `id` are provided, create them otherwise.
+      operationId: createOrUpdateTeachers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Teacher'
+      responses:
+        '200':
+          description: The created or updated teachers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Teacher'
+  '/teachers/{id}':
+    get:
+      tags:
+        - Users
+      summary: Get teacher by identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      operationId: getTeacherById
+      responses:
+        '200':
+          description: The identified teacher
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Teacher'
+        '400':
+          description: Bad request
+  '/admin':
+    get:
+      tags:
+        - Users
+      summary: get admin
+      operationId: getAdmin
+      responses:
+        '200':
+          description: the identitie of admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+  '/calendars':
+    get:
+      tags:
+        - "calendars"
+      summary: Get Calendars to this week
+      operationId: getcalendars
+      parameters:
+        - name: week of 
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/calendar'
+        400:
+          description: Error
+  '/courses':
+    get:
+      tags:
+        - Teaching
+      summary: Get all courses
+      operationId: getCourses
+      responses:
+        '200':
+          description: List of all courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+        '400':
+          description: Bad request
+    put:
+      tags:
+        - Teaching
+      summary: Create new courses or update existing courses
+      description: Update courses when id are provided, create them otherwise.
+      operationId: createOrUpdateCourses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        '200':
+          description: The created or updated courses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '400':
+          description: Bad request
+  '/courses/{id}':
+    get:
+      tags:
+        - Teaching
+      summary: Get course by identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      operationId: getCourseById
+      responses:
+        '200':
+          description: The identified course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '400':
+          description: Bad request
+components:
+  schemas:
+    User:
+      properties:
+        id:
+          type: string
+        ref:
+          type: string
+          example: STD000001
+        first_name:
+          type: string
+        last_name:
+          type: string
+        sex:
+          type: string
+          enum:
+            - M
+            - F
+        birth_date:
+          type: string
+          format: date
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        entrance_datetime:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/EnableStatus'
+    EnableStatus:
+      type: string
+      enum:
+        - ENABLED
+        - DISABLED
+    Student:
+      allOf:
+        - $ref: '#/components/schemas/User'
+    Teacher:
+      allOf:
+        - $ref: '#/components/schemas/User'
+    Admin:
+      allOf:
+        - $ref: '#/components/schemas/User'
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: The group number one
+        ref:
+          type: string
+          example: G1
+        creation_datetime:
+          type: string
+          format: date-time
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+        ref:
+          type: string
+          example: PROG1
+        name:
+          type: string
+          example: Algorithmics
+        credits:
+          type: integer
+        total_hours:
+          type: integer
+    calendar:
+      properties:
+        week of:
+          type: string
+          format: date
+        allOf:
+          $ref: '#/components/schemas/Course'
